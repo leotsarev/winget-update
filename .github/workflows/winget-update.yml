@@ -1,0 +1,41 @@
+name: Update WinGet Packages
+
+on:
+  workflow_dispatch:
+# schedule:
+#  - cron:  '0 3 * * *' # Scheduled to run daily at 03:00
+
+jobs:
+  update:
+    name: Update package ${{ matrix.id }}
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        include:
+          - id: "getzola.zola"
+            repo: "getzola/zola"
+            url: "https://github.com/getzola/zola/releases/download/v{VERSION}/zola-{VERSION}-x86_64-pc-windows-msvc.zip"
+#          - id: "michidk.vscli"
+#            repo: "michidk/vscli"
+            #url: "https://github.com/michidk/vscli/releases/download/v{VERSION}/vscli-x86_64-pc-windows-msvc.zip"
+
+    steps:
+    - name: Update Packages
+      uses: michidk/winget-updater@latest
+      with:
+        komac-token: ${{ secrets.KOMAC_TOKEN }}
+        identifier: ${{ matrix.id }}
+        repo: ${{ matrix.repo }}
+        url: ${{ matrix.url }}
+
+  cleanup:
+    name: Cleanup branches
+    needs: update # Not necessarily needed as PRs don't get closed that quick but still nice to have it in order
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Run Komac
+      uses: michidk/run-komac@latest
+      with:
+        args: 'cleanup --only-merged --token=${{ secrets.KOMAC_TOKEN }}'
