@@ -32,7 +32,7 @@ jobs:
   cleanup:
     name: Cleanup branches
     needs: update # Not necessarily needed as PRs don't get closed that quick but still nice to have it in order
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Run Komac
